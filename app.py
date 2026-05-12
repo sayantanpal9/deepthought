@@ -1,13 +1,24 @@
-from flask import Flask,render_template
+from flask import Flask,render_template,request,redirect,url_for
+import requests
 
 app = Flask(__name__)
 
-@app.route('/',methods=['GET'])
+@app.route('/home',methods=['POST','GET'])
 def home():
+    if request.method=='POST':
+        print(request.form['transcript'])
+        return redirect(url_for('resp',data = request.form['transcript']))
     return render_template('home.html')
+
+
 
 @app.route('/resp',methods=['GET'])
 def resp():
-    return render_template('res.html')
+    data = request.args.get('data')
+    return render_template('res.html',data=data)
+
+
+
+
 if __name__=='__main__':
     app.run(debug=True)
