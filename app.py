@@ -15,7 +15,14 @@ def home():
 @app.route('/resp',methods=['GET'])
 def resp():
     data = request.args.get('data')
-    return render_template('res.html',data=data)
+
+    response = requests.post('http://localhost:11434/api/generate', json={
+        'model': 'llama3.2',
+        'prompt': data,
+        'stream': False
+    })
+    print(response.json()['response']) 
+    return render_template('res.html',data=response.json()['response'])
 
 
 
