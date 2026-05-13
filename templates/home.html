@@ -1,23 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Trinethra | Audit Input</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f0f2f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .form-container { max-width: 900px; margin: 40px auto; }
+        .card { border: none; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        .section-header { background-color: #f8f9fa; padding: 10px 15px; border-radius: 8px; font-weight: 600; color: #495057; margin-bottom: 20px; border-left: 4px solid #0d6efd; }
+        #loadingOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 9999;
+        }
+    </style>
 </head>
 <body>
-    
-    <form action = '/home' method = 'POST'>
-  <div class="mb-3">
-    <label for="transcript" class="form-label">enter your transcript here</label>
-    <input  class="form-control" name='transcript'>
-  </div>
 
+<div class="container form-container">
+    <div class="text-center mb-4">
+        <h1 class="fw-bold text-primary">TRINETHRA AUDIT FORM</h1>
+        <p class="text-muted">Fill in the placement and transcript details to generate a structured audit.</p>
+    </div>
 
-  <button type="submit" class="btn btn-primary">Submit</button>
-</form>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-    
+    <div class="card p-4">
+        <form action="/home" method="POST" onsubmit="showLoading()">
+            
+            <!-- Fellow Information -->
+            <div class="section-header">Fellow Details</div>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" name="fellow_name" class="form-control" placeholder="Karthik Narayanan" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Tenure</label>
+                    <input type="text" name="tenure" class="form-control" placeholder="4 months" required>
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Background</label>
+                    <input type="text" name="background" class="form-control" placeholder="B.Tech Mechanical, 1 year prior experience..." required>
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Placement Goal</label>
+                    <input type="text" name="placement" class="form-control" placeholder="Support new product line launch..." required>
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Target KPIs (comma separated)</label>
+                    <input type="text" name="targetKpis" class="form-control" placeholder="quality, tat" required>
+                </div>
+            </div>
+
+            <!-- Company Information -->
+            <div class="section-header">Company Details</div>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label class="form-label">Company Name</label>
+                    <input type="text" name="company_name" class="form-control" placeholder="Veerabhadra Auto Components" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Location</label>
+                    <input type="text" name="location" class="form-control" placeholder="Pune, Maharashtra" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Industry</label>
+                    <input type="text" name="industry" class="form-control" placeholder="Automotive" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Employees</label>
+                    <input type="number" name="employees" class="form-control" placeholder="120" required>
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Company Context</label>
+                    <input type="text" name="company_context" class="form-control" placeholder="Founder-run, scaling..." required>
+                </div>
+            </div>
+
+            <!-- Supervisor & Transcript -->
+            <div class="section-header">Interview & Transcript</div>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label class="form-label">Supervisor Name</label>
+                    <input type="text" name="supervisor_name" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Supervisor Role</label>
+                    <input type="text" name="role" class="form-control" placeholder="Founder/MD" required>
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Call Context</label>
+                    <input type="text" name="callContext" class="form-control" placeholder="10-minute phone call..." required>
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Raw Transcript</label>
+                    <textarea name="transcript" class="form-control" rows="10" placeholder="Paste the conversation here..." required></textarea>
+                </div>
+            </div>
+
+            <!-- Submit -->
+            <div class="d-grid pt-3">
+                <button type="submit" class="btn btn-primary btn-lg fw-bold">RUN PERFORMANCE AUDIT</button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<div id="loadingOverlay">
+    <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;"></div>
+    <h4 class="fw-bold">Analyzing Systems vs. Execution</h4>
+    <p class="text-muted">Processing data into Trinethra JSON Structure...</p>
+</div>
+
+<script>
+    function showLoading() {
+        document.getElementById('loadingOverlay').style.display = 'flex';
+    }
+</script>
+
 </body>
 </html>
