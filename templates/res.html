@@ -3,31 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audit Results | {{ data.fellow.name }}</title>
+    <title>Audit Results | {{ data.fellow_name }}</title>
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
         body { background-color: #f4f7f6; color: #2d3436; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         .card { border: none; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); margin-bottom: 24px; }
         
-        /* Score & Band Styling */
         .score-display { font-size: 4rem; font-weight: 800; line-height: 1; margin-bottom: 10px; }
-        .band-banner { padding: 8px 16px; border-radius: 30px; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
         
         /* Band Dynamic Colors */
         .bg-score-attention { background: #dc3545; color: white; } /* 1-3 */
         .bg-score-productivity { background: #0d6efd; color: white; } /* 4-6 */
         .bg-score-performance { background: #198754; color: white; } /* 7-10 */
 
-        /* Boundary Diagnosis */
         .boundary-box { background-color: #fff; border-left: 5px solid #6c757d; border-radius: 8px; padding: 15px; }
-
-        /* Evidence Quote */
         .evidence-quote { font-style: italic; border-left: 3px solid #dee2e6; padding-left: 15px; color: #4b4b4b; }
         .signal-indicator { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; }
-
         .kpi-tag { background: #e9ecef; color: #495057; font-size: 0.7rem; font-weight: 700; padding: 3px 8px; border-radius: 4px; border: 1px solid #dee2e6; }
     </style>
 </head>
@@ -39,11 +32,10 @@
     <div class="row mb-5 align-items-end">
         <div class="col-md-8">
             <h6 class="text-primary fw-bold text-uppercase mb-1">DeepThought Trinethra Audit</h6>
-            <h1 class="fw-bold mb-0">{{ data.fellow.name }}</h1>
+            <h1 class="fw-bold mb-0">{{ data.fellow_name }}</h1>
             <p class="text-muted mb-0">
-                <i class="bi bi-geo-alt"></i> {{ data.company.location }} | 
-                <i class="bi bi-briefcase"></i> {{ data.company.industry }} | 
-                <strong>Placement:</strong> {{ data.fellow.placement }}
+                <i class="bi bi-building"></i> {{ data.company_name }} | 
+                <strong>Placement:</strong> {{ data.fellow_placement }}
             </p>
         </div>
         <div class="col-md-4 text-md-end mt-3">
@@ -51,14 +43,12 @@
         </div>
     </div>
 
-    <!-- Main Content Grid -->
     <div class="row">
-        
         <!-- Sidebar: Scoring & Gaps -->
         <div class="col-lg-4">
             
             <!-- 1. Scorecard -->
-            {% set score_val = data.fellow.score.value | int %}
+            {% set score_val = data.score_value | int %}
             {% if score_val >= 7 %}
                 {% set band_color = 'bg-score-performance' %}
             {% elif score_val >= 4 %}
@@ -70,8 +60,10 @@
             <div class="card p-4 text-center {{ band_color }} shadow-lg">
                 <div class="small fw-bold opacity-75 mb-2">FINAL RUBRIC SCORE</div>
                 <div class="score-display">{{ score_val }}<small class="fs-5 opacity-50">/10</small></div>
-                <div class="fw-bold h4 mb-3">{{ data.fellow.score.label }}</div>
-                <div class="badge bg-white text-dark py-2 px-3 rounded-pill">{{ data.fellow.score.band }}</div>
+                <div class="fw-bold h4 mb-3">{{ data.score_label }}</div>
+                <div class="badge bg-white text-dark py-2 px-3 rounded-pill">{{ data.score_band }}</div>
+                <hr class="border-light opacity-25 my-3">
+                <p class="small text-start mb-0 opacity-75"><strong>Justification:</strong><br>{{ data.score_justification }}</p>
             </div>
 
             <!-- 2. Critical Boundary Check -->
@@ -89,13 +81,13 @@
             <!-- 3. Strategic Gaps -->
             <div class="card p-4">
                 <h6 class="fw-bold text-danger mb-3 text-uppercase small">Strategic Gaps Identified</h6>
-                {% for gap in data.fellow.gaps %}
+                {% for gap in data.gaps %}
                 <div class="mb-3 border-bottom pb-2">
                     <div class="text-primary fw-bold" style="font-size: 0.7rem; text-transform: uppercase;">{{ gap.dimension }}</div>
                     <div class="small">{{ gap.detail }}</div>
                 </div>
                 {% else %}
-                <p class="small text-muted">No specific gaps identified.</p>
+                <p class="small text-muted">No specific gaps identified in the transcript.</p>
                 {% endfor %}
             </div>
         </div>
@@ -115,22 +107,24 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for kpi in data.fellow.kpiMapping %}
+                            {% for kpi in data.kpi_mapping %}
                             <tr>
                                 <td><span class="kpi-tag">{{ kpi.kpi.upper().replace('_', ' ') }}</span></td>
                                 <td class="small text-muted">{{ kpi.evidence }}</td>
                             </tr>
+                            {% else %}
+                            <tr><td colspan="2" class="text-muted small text-center py-3">No direct KPI impacts were identified.</td></tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- 5. Dimensions Evidence (Grouped) -->
+            <!-- 5. Dimensions Evidence Matrix -->
             <div class="card p-4 mb-4">
                 <h6 class="fw-bold mb-4 small text-uppercase">Assessment Evidence Matrix</h6>
                 
-                {% for dimension, items in data.fellow.evidence | groupby('dimension') %}
+                {% for dimension, items in data.evidence | groupby('dimension') %}
                 <div class="mb-4">
                     <h6 class="fw-bold text-secondary text-uppercase border-bottom pb-2 mb-3" style="font-size: 0.75rem;">
                         {{ dimension.replace('_', ' ') }}
@@ -138,10 +132,10 @@
                     {% for item in items %}
                     <div class="mb-3 px-3">
                         <div class="d-flex align-items-center mb-1">
-                            {% if item.signal == 'positive' %}
+                            {% if item.signal|lower == 'positive' %}
                                 <i class="bi bi-plus-circle-fill text-success me-2"></i> <span class="signal-indicator text-success">Positive Signal</span>
                             {% else %}
-                                <i class="bi bi-dash-circle-fill text-danger me-2"></i> <span class="signal-indicator text-danger">Negative Signal</span>
+                                <i class="bi bi-dash-circle-fill text-danger me-2"></i> <span class="signal-indicator text-danger">Negative / Missing</span>
                             {% endif %}
                         </div>
                         <div class="evidence-quote small my-2">"{{ item.quote }}"</div>
@@ -149,6 +143,8 @@
                     </div>
                     {% endfor %}
                 </div>
+                {% else %}
+                <p class="small text-muted">No clear evidence mapped to specific dimensions yet.</p>
                 {% endfor %}
             </div>
 
@@ -156,13 +152,17 @@
             <div class="card p-4 bg-dark text-white">
                 <h6 class="fw-bold text-warning mb-3 text-uppercase small">Recommended Supervisor Probing</h6>
                 <div class="row g-3">
-                    {% for q in data.fellow.followUpQuestions %}
+                    {% for q in data.follow_up_questions %}
                     <div class="col-md-12">
                         <div class="p-3 bg-white bg-opacity-10 rounded border border-white border-opacity-10">
-                            <div class="small text-info fw-bold mb-1">Gap: {{ q.targetGap.replace('_', ' ').title() }}</div>
-                            <div class="fw-bold mb-1 fst-italic">"{{ q.question }}"</div>
-                            <div class="small opacity-50" style="font-size: 0.7rem;">Looking for: {{ q.lookingFor }}</div>
+                            <div class="small text-info fw-bold mb-1">Gap Focus: {{ q.target_gap.replace('_', ' ').title() }}</div>
+                            <div class="fw-bold mb-1 fst-italic lh-sm">"{{ q.question }}"</div>
+                            <div class="small opacity-75 mt-2" style="font-size: 0.75rem;"><strong>Looking for:</strong> {{ q.looking_for }}</div>
                         </div>
+                    </div>
+                    {% else %}
+                    <div class="col-md-12">
+                        <p class="small text-muted mb-0">No follow-up questions generated for this transcript.</p>
                     </div>
                     {% endfor %}
                 </div>
