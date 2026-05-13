@@ -3,84 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trinethra | Audit Report</title>
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Audit Results | {{ data.fellow.name }}</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
-        body { background-color: #f4f7f6; font-family: 'Inter', sans-serif; }
-        .card { border: none; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 1.5rem; }
-        .score-circle { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 800; background: #0d6efd; color: white; }
-        .badge-system { background-color: #d1e7dd; color: #0f5132; border: 1px solid #badbcc; }
-        .badge-personal { background-color: #fff3cd; color: #664d03; border: 1px solid #ffecb5; }
-        .evidence-quote { font-style: italic; color: #495057; border-left: 4px solid #dee2e6; padding-left: 15px; margin-bottom: 10px; }
-        .signal-positive { color: #198754; font-weight: 600; }
-        .signal-negative { color: #dc3545; font-weight: 600; }
-        .gap-card { background-color: #fdf2f2; border-left: 4px solid #dc3545; }
+        body { background-color: #f4f7f6; color: #2d3436; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .card { border: none; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); margin-bottom: 24px; }
+        
+        /* Score & Band Styling */
+        .score-display { font-size: 4rem; font-weight: 800; line-height: 1; margin-bottom: 10px; }
+        .band-banner { padding: 8px 16px; border-radius: 30px; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+        
+        /* Band Dynamic Colors */
+        .bg-score-attention { background: #dc3545; color: white; } /* 1-3 */
+        .bg-score-productivity { background: #0d6efd; color: white; } /* 4-6 */
+        .bg-score-performance { background: #198754; color: white; } /* 7-10 */
+
+        /* Boundary Diagnosis */
+        .boundary-box { background-color: #fff; border-left: 5px solid #6c757d; border-radius: 8px; padding: 15px; }
+
+        /* Evidence Quote */
+        .evidence-quote { font-style: italic; border-left: 3px solid #dee2e6; padding-left: 15px; color: #4b4b4b; }
+        .signal-indicator { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; }
+
+        .kpi-tag { background: #e9ecef; color: #495057; font-size: 0.7rem; font-weight: 700; padding: 3px 8px; border-radius: 4px; border: 1px solid #dee2e6; }
     </style>
 </head>
 <body>
 
 <div class="container py-5">
-    <!-- Header: Quick Context -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h6 class="text-primary fw-bold mb-0">PERFORMANCE AUDIT REPORT</h6>
-            <h2 class="fw-bold">Audit Results</h2>
+    
+    <!-- Top Header -->
+    <div class="row mb-5 align-items-end">
+        <div class="col-md-8">
+            <h6 class="text-primary fw-bold text-uppercase mb-1">DeepThought Trinethra Audit</h6>
+            <h1 class="fw-bold mb-0">{{ data.fellow.name }}</h1>
+            <p class="text-muted mb-0">
+                <i class="bi bi-geo-alt"></i> {{ data.company.location }} | 
+                <i class="bi bi-briefcase"></i> {{ data.company.industry }} | 
+                <strong>Placement:</strong> {{ data.fellow.placement }}
+            </p>
         </div>
-        <a href="/home" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> New Audit</a>
+        <div class="col-md-4 text-md-end mt-3">
+            <a href="/home" class="btn btn-outline-dark btn-sm rounded-pill px-4">New Audit</a>
+        </div>
     </div>
 
+    <!-- Main Content Grid -->
     <div class="row">
-        <!-- Sidebar: Score and Justification -->
+        
+        <!-- Sidebar: Scoring & Gaps -->
         <div class="col-lg-4">
-            <div class="card p-4 text-center">
-                <div class="d-flex justify-content-center mb-3">
-                    <div class="score-circle">{{ data.score.value }}</div>
-                </div>
-                <h4 class="fw-bold">{{ data.score.label }}</h4>
-                <span class="badge bg-light text-dark mb-3">Band: {{ data.score.band }}</span>
-                <hr>
-                <p class="text-start small text-muted"><strong>Justification:</strong><br>{{ data.score.justification }}</p>
-                <div class="alert alert-info py-2 small mb-0">Confidence Score: {{ data.score.confidence.upper() }}</div>
+            
+            <!-- 1. Scorecard -->
+            {% set score_val = data.fellow.score.value | int %}
+            {% if score_val >= 7 %}
+                {% set band_color = 'bg-score-performance' %}
+            {% elif score_val >= 4 %}
+                {% set band_color = 'bg-score-productivity' %}
+            {% else %}
+                {% set band_color = 'bg-score-attention' %}
+            {% endif %}
+
+            <div class="card p-4 text-center {{ band_color }} shadow-lg">
+                <div class="small fw-bold opacity-75 mb-2">FINAL RUBRIC SCORE</div>
+                <div class="score-display">{{ score_val }}<small class="fs-5 opacity-50">/10</small></div>
+                <div class="fw-bold h4 mb-3">{{ data.fellow.score.label }}</div>
+                <div class="badge bg-white text-dark py-2 px-3 rounded-pill">{{ data.fellow.score.band }}</div>
             </div>
 
+            <!-- 2. Critical Boundary Check -->
+            <div class="card p-3 boundary-box mb-4">
+                <div class="fw-bold small mb-1 text-uppercase text-secondary">The 6 vs 7 Boundary</div>
+                <p class="small mb-0">
+                    {% if score_val >= 7 %}
+                    <i class="bi bi-check-circle-fill text-success"></i> <strong>PASSED:</strong> Evidence of System-building detected.
+                    {% else %}
+                    <i class="bi bi-info-circle-fill text-primary"></i> <strong>EXECUTION ONLY:</strong> Reliable but not yet building systems.
+                    {% endif %}
+                </p>
+            </div>
+
+            <!-- 3. Strategic Gaps -->
             <div class="card p-4">
-                <h6 class="fw-bold mb-3"><i class="bi bi-bullseye text-danger"></i> Strategic Gaps</h6>
-                {% for gap in data.gaps %}
-                <div class="gap-card p-2 mb-2 rounded">
-                    <div class="small fw-bold text-uppercase">{{ gap.dimension.replace('_', ' ') }}</div>
+                <h6 class="fw-bold text-danger mb-3 text-uppercase small">Strategic Gaps Identified</h6>
+                {% for gap in data.fellow.gaps %}
+                <div class="mb-3 border-bottom pb-2">
+                    <div class="text-primary fw-bold" style="font-size: 0.7rem; text-transform: uppercase;">{{ gap.dimension }}</div>
                     <div class="small">{{ gap.detail }}</div>
                 </div>
+                {% else %}
+                <p class="small text-muted">No specific gaps identified.</p>
                 {% endfor %}
             </div>
         </div>
 
-        <!-- Main Content: Evidence and KPIs -->
+        <!-- Right: Evidence Matrix & KPIs -->
         <div class="col-lg-8">
-            <!-- KPI Mapping Table -->
-            <div class="card p-4">
-                <h5 class="fw-bold mb-4">KPI Impact Analysis</h5>
+            
+            <!-- 4. KPI Table -->
+            <div class="card p-4 mb-4">
+                <h6 class="fw-bold mb-4 small text-uppercase">KPI Impact Validation</h6>
                 <div class="table-responsive">
                     <table class="table table-hover align-middle">
                         <thead class="table-light">
-                            <tr>
-                                <th>KPI</th>
-                                <th>Evidence from Transcript</th>
-                                <th>Stability</th>
+                            <tr style="font-size: 0.75rem;">
+                                <th>TARGET KPI</th>
+                                <th>TRANSCRIPT EVIDENCE</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for kpi in data.kpiMapping %}
+                            {% for kpi in data.fellow.kpiMapping %}
                             <tr>
-                                <td class="fw-bold">{{ kpi.kpi }}</td>
-                                <td class="small">{{ kpi.evidence }}</td>
-                                <td>
-                                    <span class="badge {{ 'badge-system' if kpi.systemOrPersonal == 'system' else 'badge-personal' }}">
-                                        {{ kpi.systemOrPersonal.upper() }}
-                                    </span>
-                                </td>
+                                <td><span class="kpi-tag">{{ kpi.kpi.upper().replace('_', ' ') }}</span></td>
+                                <td class="small text-muted">{{ kpi.evidence }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -88,40 +126,52 @@
                 </div>
             </div>
 
-            <!-- Evidence Section -->
-            <div class="card p-4">
-                <h5 class="fw-bold mb-4">Key Evidence Clips</h5>
-                {% for item in data.evidence %}
-                <div class="mb-4 border-bottom pb-3">
-                    <div class="evidence-quote">"{{ item.quote }}"</div>
-                    <div class="d-flex gap-3 small mt-2">
-                        <span class="signal-{{ item.signal }}">
-                            <i class="bi bi-{{ 'plus-circle' if item.signal == 'positive' else 'dash-circle' }}"></i> 
-                            {{ item.signal.upper() }} SIGNAL
-                        </span>
-                        <span class="text-secondary fw-bold text-uppercase">{{ item.dimension.replace('_', ' ') }}</span>
+            <!-- 5. Dimensions Evidence (Grouped) -->
+            <div class="card p-4 mb-4">
+                <h6 class="fw-bold mb-4 small text-uppercase">Assessment Evidence Matrix</h6>
+                
+                {% for dimension, items in data.fellow.evidence | groupby('dimension') %}
+                <div class="mb-4">
+                    <h6 class="fw-bold text-secondary text-uppercase border-bottom pb-2 mb-3" style="font-size: 0.75rem;">
+                        {{ dimension.replace('_', ' ') }}
+                    </h6>
+                    {% for item in items %}
+                    <div class="mb-3 px-3">
+                        <div class="d-flex align-items-center mb-1">
+                            {% if item.signal == 'positive' %}
+                                <i class="bi bi-plus-circle-fill text-success me-2"></i> <span class="signal-indicator text-success">Positive Signal</span>
+                            {% else %}
+                                <i class="bi bi-dash-circle-fill text-danger me-2"></i> <span class="signal-indicator text-danger">Negative Signal</span>
+                            {% endif %}
+                        </div>
+                        <div class="evidence-quote small my-2">"{{ item.quote }}"</div>
+                        <div class="small text-muted ms-3"><strong>AI Lens:</strong> {{ item.interpretation }}</div>
                     </div>
-                    <p class="small mt-1 text-muted"><strong>Interpretation:</strong> {{ item.interpretation }}</p>
+                    {% endfor %}
                 </div>
                 {% endfor %}
             </div>
 
-            <!-- Follow-up Questions -->
-            <div class="card p-4 bg-primary text-white">
-                <h5 class="fw-bold mb-3"><i class="bi bi-chat-left-dots"></i> Recommended Follow-up Questions</h5>
-                <p class="small opacity-75">Use these questions in the next session to verify "Systems Building" levels.</p>
-                <div class="list-group list-group-flush">
-                    {% for q in data.followUpQuestions %}
-                    <div class="list-group-item bg-transparent text-white border-white border-opacity-25 px-0">
-                        <div class="fw-bold">"{{ q.question }}"</div>
-                        <div class="small opacity-75 mt-1">Targeting: <strong>{{ q.targetGap }}</strong> — Looking for: {{ q.lookingFor }}</div>
+            <!-- 6. Follow-up Questions -->
+            <div class="card p-4 bg-dark text-white">
+                <h6 class="fw-bold text-warning mb-3 text-uppercase small">Recommended Supervisor Probing</h6>
+                <div class="row g-3">
+                    {% for q in data.fellow.followUpQuestions %}
+                    <div class="col-md-12">
+                        <div class="p-3 bg-white bg-opacity-10 rounded border border-white border-opacity-10">
+                            <div class="small text-info fw-bold mb-1">Gap: {{ q.targetGap.replace('_', ' ').title() }}</div>
+                            <div class="fw-bold mb-1 fst-italic">"{{ q.question }}"</div>
+                            <div class="small opacity-50" style="font-size: 0.7rem;">Looking for: {{ q.lookingFor }}</div>
+                        </div>
                     </div>
                     {% endfor %}
                 </div>
             </div>
+
         </div>
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
