@@ -89,4 +89,3 @@ Top-level (most relevant):
   - home.html — Input form (fellow, company, transcript)
   - res.html — Rendered audit result (score, evidence, KPI mapping, follow-up questions)
 
-Example tree:
